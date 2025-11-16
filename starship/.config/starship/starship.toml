@@ -1,0 +1,73 @@
+format = """
+$kubernetes$helm$terraform$aws
+$username$hostname$directory\
+$git_branch$git_commit$git_state\
+$golang$nodejs$lua$docker_context\
+$line_break\
+$character
+"""
+
+##############################
+# Global prompt character    #
+##############################
+[character]
+success_symbol = "[➜](bold green)"
+
+##############################
+# Cloud Technologies         #
+##############################
+[kubernetes]
+format = '[$symbol$context( \($namespace\))]($style) '
+style = 'dimmed green'
+symbol = "☸ "
+
+[docker_context]
+format = 'via [🐋 $context]($style)'
+style = "blue bold"
+
+[helm]
+format = 'via 🪖 [$version](bold white) '
+
+[terraform]
+format = '[🏎💨 $version$workspace]($style) '
+
+##############################
+# Main row information       #
+##############################
+[username]
+show_always = true
+format = '[$user@]($style)'
+style_user = 'green'
+
+[hostname]
+format = '[$hostname]($style) in '
+style = 'green'
+ssh_only = false
+
+[directory]
+style = 'blue'
+home_symbol = "🏠 "
+truncation_symbol = "📂 "
+read_only = ' '
+truncate_to_repo = true
+
+[git_branch]
+symbol = '🌱 '
+truncation_length = 12
+style = 'dimmed green'
+
+##############################
+# Programming languages      #
+##############################
+[nodejs]
+format = 'via [$symbol($version )]($style)'
+
+[lua]
+format = 'via [🌕 $version](bold blue) '
+
+[golang]
+format = 'via [🏎💨 $version]($style) '
+style = "bold cyan"
+
+[java]
+symbol = '🌟 '
