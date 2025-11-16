@@ -1,32 +1,32 @@
 #!/bin/bash
-# AUR Helper (yay) installieren
+# AUR Helper (paru) installieren
 
 set -e
 
 echo "🔧 AUR Helper installieren..."
 
-# Prüfen ob yay bereits installiert ist
-if command -v yay &> /dev/null; then
-    echo "✅ yay ist bereits installiert"
-    exit 0
-fi
-
-# Prüfen ob paru installiert ist
+# Prüfen ob paru bereits installiert ist
 if command -v paru &> /dev/null; then
     echo "✅ paru ist bereits installiert"
     exit 0
 fi
 
-echo "📦 yay wird installiert..."
+# Prüfen ob yay installiert ist (fallback)
+if command -v yay &> /dev/null; then
+    echo "✅ yay ist bereits installiert"
+    exit 0
+fi
+
+echo "📦 paru wird installiert..."
 
 # Abhängigkeiten installieren
 sudo pacman -S --needed --noconfirm git base-devel
 
-# yay klonen und bauen
+# paru klonen und bauen
 cd /tmp
-rm -rf yay
-git clone https://aur.archlinux.org/yay.git
-cd yay
+rm -rf paru
+git clone https://aur.archlinux.org/paru.git
+cd paru
 makepkg -si --noconfirm
 
-echo "✅ yay wurde erfolgreich installiert!"
+echo "✅ paru wurde erfolgreich installiert!"

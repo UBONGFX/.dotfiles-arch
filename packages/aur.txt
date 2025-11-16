@@ -1,5 +1,5 @@
 # AUR Pakete
-# Installation: yay -S --needed - < packages/aur.txt
+# Installation: paru -S --needed - < packages/aur.txt
 
 # Hyprland Ecosystem
 hyprpicker

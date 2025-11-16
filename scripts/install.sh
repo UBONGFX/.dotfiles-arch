@@ -47,7 +47,7 @@ echo ""
 echo "📦 AUR-Pakete installieren..."
 if [ -f "packages/aur.txt" ]; then
     # Kommentare und leere Zeilen entfernen
-    grep -v '^#' packages/aur.txt | grep -v '^$' | yay -S --needed -
+    grep -v '^#' packages/aur.txt | grep -v '^$' | paru -S --needed -
     echo "✅ AUR-Pakete installiert"
 else
     echo "⚠️  packages/aur.txt nicht gefunden"
