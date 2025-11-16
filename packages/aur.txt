@@ -1,0 +1,40 @@
+# AUR Pakete
+# Installation: yay -S --needed - < packages/aur.txt
+
+# Hyprland Ecosystem
+hyprpicker
+hyprshot
+
+# Terminal & Shell
+oh-my-zsh-git
+starship-bin
+zsh-autosuggestions
+zsh-history-substring-search
+zsh-syntax-highlighting
+zsh-you-should-use
+
+# System Monitor
+btop
+
+# Entwicklung
+# visual-studio-code-bin
+# postman-bin
+# docker-desktop  # Falls du Docker Desktop statt CLI willst
+
+# Browser & Apps
+# brave-bin
+# spotify
+# discord
+# vesktop-bin
+
+# Fonts
+ttf-meslo-nerd-font-powerlevel10k
+ttf-font-awesome
+ttf-jetbrains-mono-nerd
+
+# Themes & Icons
+# bibata-cursor-theme
+# papirus-icon-theme
+
+# Weitere Tools
+# todo: deine bevorzugten AUR-Pakete hier eintragen
