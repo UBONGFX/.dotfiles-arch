@@ -1,0 +1,87 @@
+[user]
+        name = Jordi Isken
+        email = 72348117+UBONGFX@users.noreply.github.com
+
+[init]
+        defaultBranch = main
+
+[core]
+        editor = nvim
+        autocrlf = input
+        safecrlf = true
+        excludesfile = ~/.gitignore_global
+        pager = delta
+        whitespace = trailing-space,space-before-tab
+
+[pull]
+        ff = only
+
+[push]
+        autoSetupRemote = true
+
+[fetch]
+        prune = true
+
+[branch]
+        autoSetupMerge = always
+
+[merge]
+        tool = nvimdiff
+        conflictstyle = diff3
+
+[diff]
+        tool = nvimdiff
+        colorMoved = default
+
+[color "branch"]
+        current = yellow bold
+        local = green bold
+        remote = cyan bold
+
+[color "status"]
+        added = green bold
+        changed = yellow bold
+        untracked = red bold
+
+[alias]
+        unstage = reset HEAD --
+        last = log -1 HEAD
+
+        # Log aliases
+        lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --all
+        lgb = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+        # Useful shortcuts
+        amend = commit --amend --no-edit
+        fixup = commit --fixup
+        squash = commit --squash
+        unstash = stash pop
+        undo = reset --soft HEAD^
+ 
+        # Branch management
+        cleanup = "!git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d"
+        recent = branch --sort=-committerdate
+
+        # Diff aliases
+        staged = diff --staged
+        conflicts = diff --name-only --diff-filter=U
+
+[credential]
+        helper = osxkeychain
+
+[delta]
+        navigate = true
+        light = false 
+        line-numbers = true
+        side-by-side = false
+        syntax-theme = Dracula
+        features = decorations
+
+[delta "decorations"]
+        commit-decoration-style = bold yellow box ul
+        file-style = bold yellow ul
+        file-decoration-style = none
+        hunk-header-decoration-style = cyan box ul
+
+[interactive]
+        diffFilter = delta --color-only
