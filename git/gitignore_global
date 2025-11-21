@@ -1,0 +1,29 @@
+# Global gitignore patterns
+# This file is symlinked to ~/.gitignore_global
+
+# macOS system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows system files  
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE_BIN/
+
+# Linux system files
+*~
+.directory
+.Trash-*
+
+# Editor temporary files
+*.swp
+*.swo
+*~
+
+# Common IDE folders (when not project-specific)
+.vscode/
+.idea/
