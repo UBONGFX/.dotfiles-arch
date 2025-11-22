@@ -1,0 +1,9 @@
+[[ -f ~/.zsh/completions.zsh ]] && source ~/.config/zsh/completions.zsh
+[[ -f ~/.zsh/aliases.zsh ]] && source ~/.config/zsh/aliases.zsh
+[[ -f ~/.zsh/plugins.zsh ]] && source ~/.config/zsh/plugins.zsh
+
+eval "$(starship init zsh)"
+
+echo -e "\n💻 Welcome, $(whoami)! \nToday is $(date '+%A, %d %B %Y'). \nOK LETS GO!!! 🚀🔥🤘"
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
