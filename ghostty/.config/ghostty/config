@@ -7,3 +7,7 @@ background-opacity = 0.9
 
 mouse-hide-while-typing = true
 window-decoration = true
+
+# Window padding (in pixels)
+window-padding-x = 10
+window-padding-y = 10
