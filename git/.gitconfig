@@ -5,6 +5,9 @@
 [init]
         defaultBranch = main
 
+[credential]
+	helper = store
+
 [core]
         editor = nvim
         autocrlf = input
@@ -66,9 +69,6 @@
         staged = diff --staged
         conflicts = diff --name-only --diff-filter=U
 
-[credential]
-        helper = osxkeychain
-
 [delta]
         navigate = true
         light = false 
@@ -85,3 +85,4 @@
 
 [interactive]
         diffFilter = delta --color-only
+
