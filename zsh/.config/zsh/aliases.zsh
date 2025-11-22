@@ -1,5 +1,3 @@
-echo "🚧 Loading aliases"
-
 # Git aliases
 alias gs='git status'
 alias gc='git commit'
@@ -13,6 +11,11 @@ alias ga='git add'
 alias ll='ls -lah -g --icons --git'
 alias la='eza -l -a -g --icons --git'
 alias ls='eza --icons --git'
+
+alias c='clear'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 
 # Infrastructure tools
 alias k='kubectl'
