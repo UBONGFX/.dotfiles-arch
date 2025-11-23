@@ -15,12 +15,13 @@ window#waybar {
 }
 
 tooltip {
-    background: @surface;
-    border: 1px solid rgba(100, 114, 125, 0.5);
+    background: #24283b;
+    border: 1px solid #565f89;
+    color: #c0caf5;
 }
 
 tooltip label {
-    color: white;
+    color: #c0caf5;
 }
 
 .modules-left {
@@ -44,8 +45,9 @@ tooltip label {
 #power-profiles-daemon {
     padding: 0 15px;
     margin-right: 4px;
-    color: @primary;
-    background-color: @surface;
+    color: #c0caf5;
+    background-color: rgba(36, 40, 59, 0.6);
+    border: 1px solid rgba(86, 95, 137, 0.5);
 }
 
 #power-profiles-daemon {
@@ -55,8 +57,9 @@ tooltip label {
 #workspaces {
     padding: 8px 5px;
     border-radius: 40px;
-    color: @primary;
-    background-color: @surface;
+    color: #c0caf5;
+    background-color: rgba(36, 40, 59, 0.6);
+    border: 1px solid rgba(86, 95, 137, 0.5);
 }
 
 #workspaces button {
@@ -64,7 +67,7 @@ tooltip label {
     margin: 0px 3px;
     border-radius: 40px;
     color: transparent;
-    background-color: @on_secondary;
+    background-color: #565f89;
     transition: all 0.3s ease-in-out;
 }
 
@@ -72,8 +75,8 @@ tooltip label {
     font-size: 12px;
     min-width: 40px;
     border-radius: 40px;
-    color: @surface;
-    background-color: @primary;
+    color: #24283b;
+    background-color: #7aa2f7;
     transition: all 0.3s ease-in-out;
 }
 
@@ -81,16 +84,16 @@ tooltip label {
     font-size: 12px;
     min-width: 40px;
     border-radius: 40px;
-    color: @surface;
-    background-color: @secondary;
+    color: #24283b;
+    background-color: #7dcfff;
     background-size: 400% 400%;
 }
 
 #workspaces button.urgent {
     min-width: 40px;
     border-radius: 40px;
-    color: @surface;
-    background-color: @error;
+    color: #c0caf5;
+    background-color: #f7768e;
     background-size: 400% 400%;
     transition: all 0.3s ease-in-out;
 }
