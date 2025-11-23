@@ -3,11 +3,10 @@ theme = TokyoNight Storm
 font-size = 12
 font-family = "SF Mono" 
 
-background-opacity = 0.9
+background-opacity = 0.85
 
 mouse-hide-while-typing = true
 window-decoration = true
 
-# Window padding (in pixels)
-window-padding-x = 10
-window-padding-y = 10
+window-padding-x = 12
+window-padding-y = 12
