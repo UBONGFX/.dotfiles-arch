@@ -3,7 +3,6 @@
         "format": "{:%I:%M %p}",
         "format-alt": "{:%a, %d. %b}"
     },
-
     "hyprland/workspaces": {
         "format": "{name}",
         "persistent-workspaces": {
@@ -11,7 +10,6 @@
             "HDMI-A-1": 3 // but only three on HDMI-A-1
         }
     },
-
     "pulseaudio": {
         "format": "{volume}% {icon}",
         "format-bluetooth": "{volume}% {icon}",
@@ -35,9 +33,8 @@
             "Easy Effects Sink"
         ]
     },
-
     "network": {
-        "interface": "wlo1",
+        "interface": "wlan0",
         "format": "{ifname}",
         "format-wifi": "{essid} ",
         "format-ethernet": "{ipaddr}/{cidr} 󰊗",
@@ -48,7 +45,6 @@
         "tooltip-format-disconnected": "Disconnected",
         "max-length": 50
     },
-
     "battery": {
         "format": "{capacity}% {icon}",
         "format-icons": [
@@ -59,7 +55,6 @@
             ""
         ]
     },
-    
     "power-profiles-daemon": {
         "format": "{icon}",
         "tooltip-format": "Power profile: {profile}\nDriver: {driver}",

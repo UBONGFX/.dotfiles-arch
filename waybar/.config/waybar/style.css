@@ -5,9 +5,9 @@
     border-radius: 0;
     font-family: "SF Mono", "Adwaita Sans", "JetBrainsMono Nerd Font Propo", Roboto, Helvetica, Arial, sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 0.9rem;
     min-height: 0;
-    border-radius: 20px;
+    border-radius: 16px;
 }
 
 window#waybar {
@@ -24,11 +24,11 @@ tooltip label {
 }
 
 .modules-left {
-    margin-left: 10px;
+    margin-left: 12px;
 }
 
 .modules-right {
-    margin-right: 10px;
+    margin-right: 12px;
 }
 
 #custom-launcher,
@@ -42,11 +42,10 @@ tooltip label {
 #battery,
 #network,
 #power-profiles-daemon {
-    background-color: #121212;
-    margin-right: 10px;
     padding: 0 15px;
-    background-color: @surface;
+    margin-right: 4px;
     color: @primary;
+    background-color: @surface;
 }
 
 #power-profiles-daemon {
@@ -56,8 +55,8 @@ tooltip label {
 #workspaces {
     padding: 8px 5px;
     border-radius: 40px;
-    background-color: @surface;
     color: @primary;
+    background-color: @surface;
 }
 
 #workspaces button {
@@ -65,33 +64,33 @@ tooltip label {
     margin: 0px 3px;
     border-radius: 40px;
     color: transparent;
-    transition: all 0.3s ease-in-out;
     background-color: @on_secondary;
+    transition: all 0.3s ease-in-out;
 }
 
 #workspaces button.active {
-    background-color: @primary;
-    color: @surface;
-    min-width: 40px;
-    transition: all 0.3s ease-in-out;
     font-size: 12px;
+    min-width: 40px;
     border-radius: 40px;
+    color: @surface;
+    background-color: @primary;
+    transition: all 0.3s ease-in-out;
 }
 
 #workspaces button:hover {
-    background-color: @secondary;
-    color: @surface;
-    border-radius: 40px;
-    min-width: 40px;
     font-size: 12px;
+    min-width: 40px;
+    border-radius: 40px;
+    color: @surface;
+    background-color: @secondary;
     background-size: 400% 400%;
 }
 
 #workspaces button.urgent {
-    background-color: @error;
-    color: @surface;
-    border-radius: 40px;
     min-width: 40px;
+    border-radius: 40px;
+    color: @surface;
+    background-color: @error;
     background-size: 400% 400%;
     transition: all 0.3s ease-in-out;
 }

@@ -3,7 +3,6 @@
         "format": "󰣇",
         "on-click": "wofi --show drun"
     },
-
     "custom/notification": {
         "tooltip": false,
         "format": "{icon}",
@@ -24,7 +23,6 @@
         "on-click-right": "swaync-client -d -sw",
         "escape": true
     },
-
     "custom/media": {
         "format": "{}",
         "escape": true,
@@ -37,18 +35,24 @@
         "on-scroll-down": "playerctl previous",
         "exec": "/home/user1/.config/waybar/scripts/mediaplayer.py 2> /dev/null" // Script in resources/custom_modules folder
     },
-
     "custom/pacman": {
-        "format": "{}  ",
+        "format": "{} 󰏖",
         "interval": 3600, // every hour
         "exec": "checkupdates | wc -l", // # of updates
         "exec-if": "exit 0", // always run; consider advanced run conditions
-        "on-click": "kitty --hold 'sudo pacman -Syu'; pkill -SIGRTMIN+8 waybar", // update system
+        "on-click": "ghostty -e sh -c 'sudo pacman -Syu && read -p \"Press enter to close...\"'; pkill -SIGRTMIN+8 waybar", // update system
         "signal": 8
     },
-
+    "network": {
+        "format": "{}  ",
+        // "interval": 3600, // every hour
+        // "exec": "checkupdates | wc -l", // # of updates
+        // "exec-if": "exit 0", // always run; consider advanced run conditions
+        // "on-click": "ghostty --hold 'sudo pacman -Syu'; pkill -SIGRTMIN+8 waybar", // update system
+        // "signal": 8
+    },
     "custom/weather": {
-        "exec": "${HOME}/.config/waybar/scripts/get-weather.sh Texas",
+        "exec": "${HOME}/.config/waybar/scripts/get-weather.sh Hamburg",
         "return-type": "json",
         "format": "{}",
         "tooltip": true,
