@@ -14,8 +14,7 @@
     ],
 
     "modules-center": [
-        "custom/notification",
-        "custom/media"
+        "custom/notification"
     ],
 
     "modules-right": [
