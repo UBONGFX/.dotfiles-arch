@@ -4,5 +4,6 @@
     "workbench.colorTheme": "Tokyo Night Storm",
     "editor.formatOnSave": true,
     "github.copilot.nextEditSuggestions.enabled": true,
-    "workbench.fontAliasing": "antialiased"
+    "workbench.fontAliasing": "antialiased",
+    "dev.containers.mountWaylandSocket": false
 }

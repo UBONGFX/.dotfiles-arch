@@ -1,0 +1,53 @@
+#!/bin/bash
+# Universal clipboard shortcuts, ported from Omarchy.
+#
+# Hyprland injects an explicit chord into whatever surface has focus, so
+# SUPER+C/V/X mean copy/paste/cut everywhere. Terminals, where Ctrl+C/Ctrl+V
+# are already taken, get Ctrl+Insert / Shift+Insert instead.
+#
+# Sending with explicit mods (rather than a virtual keyboard like wtype) keeps
+# the physically held SUPER from merging into the injected chord at the seat.
+# The down/up split works around Hyprland's send-key dispatchers sometimes
+# leaving synthetic key state stuck or repeating.
+# https://github.com/hyprwm/Hyprland/discussions/14099
+
+TERMINAL_CLASSES='^(Alacritty|kitty|com\.mitchellh\.ghostty|foot|org\.codeberg\.dnkl\.foot|org\.wezfurlong\.wezterm)$'
+
+send_shortcut_once() {
+  local mods=$1 key=$2
+
+  hyprctl dispatch sendkeystate "$mods,$key,down,"
+  sleep 0.05
+  hyprctl dispatch sendkeystate "$mods,$key,up,"
+}
+
+active_window_is_terminal() {
+  local class
+  class=$(hyprctl activewindow | awk -F': ' '/^[[:space:]]*class: /{print $2; exit}')
+
+  [[ $class =~ $TERMINAL_CLASSES ]]
+}
+
+case $1 in
+  copy)
+    if active_window_is_terminal; then
+      send_shortcut_once CTRL Insert
+    else
+      send_shortcut_once CTRL c
+    fi
+    ;;
+  paste)
+    if active_window_is_terminal; then
+      send_shortcut_once SHIFT Insert
+    else
+      send_shortcut_once CTRL v
+    fi
+    ;;
+  cut)
+    send_shortcut_once CTRL x
+    ;;
+  *)
+    echo "usage: ${0##*/} copy|paste|cut" >&2
+    exit 1
+    ;;
+esac
