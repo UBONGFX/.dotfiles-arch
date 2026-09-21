@@ -29,7 +29,8 @@ hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1.
 local terminal    = "ghostty"
 local fileManager = "nautilus"
 local menu        = "wofi --show drun"
-local screenLock  = "hyprlock"
+-- local screenLock  = "hyprlock" -- superseded by the shell's lock (CTRL+ALT+L);
+                                  -- hyprlock is still installed as a fallback
 
 
 -------------------
@@ -39,11 +40,11 @@ local screenLock  = "hyprlock"
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle")
-    hl.exec_cmd("hyprpaper")
 
-    -- Omarchy shell: the bar (see ~/.config/omarchy/shell.json), its panels, and
-    -- notifications. Replaced waybar and swaync.
-    hl.exec_cmd(home .. "/.local/bin/omarchy-shell-launch")
+    -- Dynamite V3 (Quickshell): island/bar, launcher, control centre, notifications,
+    -- OSDs, power menu, lock screen, polkit agent, theme + wallpaper pickers.
+    -- It renders the wallpaper itself on a background layer, so no hyprpaper here.
+    hl.exec_cmd("qs")
 end)
 
 
@@ -55,10 +56,6 @@ end)
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
-
--- Omarchy shell (Quickshell) test: pinned checkout, kept separate from any dev
--- repo. Used by omarchy-shell-launch and by omarchy-shell IPC calls.
-hl.env("OMARCHY_PATH", "/home/ji/.local/share/omarchy-shell-src")
 
 
 -----------------------
@@ -275,41 +272,40 @@ hl.device({ name = "keychron-keychron-m3-",      sensitivity = 0.1 })
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 
 -- See https://wiki.hypr.land/Configuring/Basics/Binds/ for more
-hl.bind(mainMod .. " + T",           hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + Return",      hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + Q",           hl.dsp.window.close())
 hl.bind(mainMod .. " + M",           hl.dsp.exit())
-hl.bind(mainMod .. " + CONTROL + L", hl.dsp.exec_cmd(screenLock))
 hl.bind(mainMod .. " + E",           hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + F",           hl.dsp.window.float({ action = "toggle" }))
 
--- The Omarchy menu replaces wofi here; its Apps route is the launcher wofi
--- used to be. `menu` is left defined above so `wofi --show drun` stays a
--- one-line revert.
-hl.bind(mainMod .. " + SPACE",       hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-menu-open"))
-hl.bind(mainMod .. " + ALT + SPACE", hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-menu-open apps"))
+-- The shell's launcher replaces the Omarchy menu (and wofi before it). `menu`
+-- is left defined above so `wofi --show drun` stays a one-line revert.
+hl.bind(mainMod .. " + SPACE",       hl.dsp.global("quickshell:launcher"))
 
 hl.bind(mainMod .. " + P",           hl.dsp.window.pseudo())
 -- hl.bind(mainMod .. " + J",        hl.dsp.layout("togglesplit")) -- dwindle
 
 -- Universal copy/paste/cut: works in normal windows and in terminals, where the
 -- script swaps in Ctrl+Insert / Shift+Insert so Ctrl+C keeps interrupting.
-hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipboard copy"))
+hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipboard copy"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipboard paste"))
 hl.bind(mainMod .. " + X", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipboard cut"))
 
--- Omarchy shell panels. Same shortcuts Omarchy itself uses for network and
--- display; agents (Claude usage) has no upstream default, so A is ours.
-hl.bind(mainMod .. " + CONTROL + W", hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-panel omarchy.network"))
-hl.bind(mainMod .. " + CONTROL + D", hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-panel omarchy.monitor"))
-hl.bind(mainMod .. " + CONTROL + A", hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-panel omarchy.agents"))
+-- Shell panels. Everything here except the control centre is registered by the
+-- shell as a GlobalShortcut, so it goes through hl.dsp.global; the control
+-- centre has none, so it is driven over IPC (the island's pill also opens it).
+hl.bind(mainMod .. " + T",           hl.dsp.global("quickshell:theme"))
+hl.bind(mainMod .. " + SHIFT + T",   hl.dsp.global("quickshell:wallpaper"))
+hl.bind(mainMod .. " + C",           hl.dsp.global("quickshell:calendar"))
+hl.bind(mainMod .. " + comma",       hl.dsp.global("quickshell:settings"))
+hl.bind(mainMod .. " + N",           hl.dsp.global("quickshell:nightlight"))
+hl.bind(mainMod .. " + G",           hl.dsp.global("quickshell:gamemode"))
+hl.bind(mainMod .. " + A",           hl.dsp.exec_cmd("qs ipc call controlcenter toggle"))
 
--- Notifications now come from the shell instead of swaync, which had its own
--- panel; these are the replacements for reaching them.
-hl.bind(mainMod .. " + comma",               hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-notify dismissOne"))
-hl.bind(mainMod .. " + SHIFT + comma",       hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-notify dismissAll"))
-hl.bind(mainMod .. " + ALT + comma",         hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-notify invokeLast"))
-hl.bind(mainMod .. " + SHIFT + ALT + comma", hl.dsp.exec_cmd(home .. "/.local/bin/omarchy-notify showHistory"))
+-- Session control. The shell owns the lock screen now (WlSessionLock + PAM),
+-- so hyprlock is unbound but still installed.
+hl.bind("CONTROL + ALT + Delete",    hl.dsp.global("quickshell:logout"))
+hl.bind("CONTROL + ALT + L",         hl.dsp.global("quickshell:lock"))
 
 -- Move focus with mainMod + vim movement keys
 hl.bind(mainMod .. " + h", hl.dsp.focus({ direction = "left" }))
@@ -353,12 +349,14 @@ hl.bind(mainMod .. " + ALT + k", hl.dsp.window.resize({ x = 0,   y = -40 }))
 hl.bind(mainMod .. " + ALT + j", hl.dsp.window.resize({ x = 0,   y = 40 }))
 
 -- Laptop multimedia keys for volume and LCD brightness
-hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume",  hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
-hl.bind("XF86AudioMute",         hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
+-- Volume and brightness run inside the shell (smooth on key repeat, and they
+-- drive its OSD), so these are GlobalShortcuts rather than shell-outs.
+hl.bind("XF86AudioRaiseVolume",  hl.dsp.global("quickshell:volumeUp"),      { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume",  hl.dsp.global("quickshell:volumeDown"),    { locked = true, repeating = true })
+hl.bind("XF86AudioMute",         hl.dsp.global("quickshell:volumeMute"),    { locked = true })
 hl.bind("XF86AudioMicMute",      hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessUp",   hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"),                  { locked = true, repeating = true })
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"),                  { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessUp",   hl.dsp.global("quickshell:brightnessUp"),  { locked = true, repeating = true })
+hl.bind("XF86MonBrightnessDown", hl.dsp.global("quickshell:brightnessDown"), { locked = true, repeating = true })
 
 -- Requires playerctl
 hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = true })
