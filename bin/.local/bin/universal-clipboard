@@ -13,12 +13,33 @@
 
 TERMINAL_CLASSES='^(Alacritty|kitty|com\.mitchellh\.ghostty|foot|org\.codeberg\.dnkl\.foot|org\.wezfurlong\.wezterm)$'
 
+# Hyprland 0.56 added a Lua config format. When one is active, `hyprctl
+# dispatch` evaluates Lua instead of the legacy "name args" syntax, so
+# sendkeystate has to be written as hl.dsp.send_key_state{...}. Probe once with
+# a harmless dispatcher and keep supporting both, so this script survives a
+# switch back to hyprland.conf.
+if hyprctl dispatch 'hl.dsp.no_op()' 2>/dev/null | grep -q '^ok'; then
+  HYPR_LUA_CONFIG=1
+else
+  HYPR_LUA_CONFIG=0
+fi
+
+send_key_state() {
+  local mods=$1 key=$2 state=$3
+
+  if ((HYPR_LUA_CONFIG)); then
+    hyprctl dispatch "hl.dsp.send_key_state({ mods = '$mods', key = '$key', state = '$state' })" >/dev/null
+  else
+    hyprctl dispatch sendkeystate "$mods,$key,$state," >/dev/null
+  fi
+}
+
 send_shortcut_once() {
   local mods=$1 key=$2
 
-  hyprctl dispatch sendkeystate "$mods,$key,down,"
+  send_key_state "$mods" "$key" down
   sleep 0.05
-  hyprctl dispatch sendkeystate "$mods,$key,up,"
+  send_key_state "$mods" "$key" up
 }
 
 active_window_is_terminal() {
