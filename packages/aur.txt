@@ -38,3 +38,12 @@ ttf-jetbrains-mono-nerd
 
 # Weitere Tools
 # todo: deine bevorzugten AUR-Pakete hier eintragen
+
+# Quickshell-Rice: Paletten-Engine fuer den Theme-Switcher
+# ACHTUNG: die wallust.toml des Bundles ist v4-Syntax, v4 gibt es upstream
+# nur als Alpha. Mit dem stabilen 3.5.2 muss palette = "salience-dark"
+# heissen (nicht "salience"), sonst schlaegt JEDER Theme-Wechsel fehl.
+# Ausserdem stimmt die sha256 des AUR-PKGBUILD nicht mehr, weil Codeberg
+# Release-Tarballs nicht reproduzierbar erzeugt -> ggf. Checksumme
+# aktualisieren und mit makepkg bauen.
+wallust

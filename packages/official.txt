@@ -1,0 +1,29 @@
+# Offizielle Pakete (core/extra)
+# Installation: sudo pacman -S --needed - < packages/official.txt
+# Hinweis: der passende Block in scripts/install.sh ist noch auskommentiert.
+# Nur ganzzeilige Kommentare - install.sh filtert mit grep -v '^#'.
+
+# --- Quickshell-Rice ("Dynamite V3") ---
+# quickshell aus extra (0.3.1) reicht, NICHT quickshell-git:
+# das wuerde das funktionierende Paket ersetzen.
+quickshell
+brightnessctl
+ddcutil
+cliphist
+wl-clipboard
+hyprsunset
+playerctl
+
+# --- Fonts ---
+# ttf-material-symbols-variable fehlt in packages.txt des Bundles,
+# ohne das Font bleiben saemtliche Settings-Icons leer.
+ttf-jetbrains-mono-nerd
+ttf-material-symbols-variable
+
+# --- von theme-apply.sh benutzt ---
+jq
+python
+
+# --- Icon-Theme fuer den App-Launcher ---
+# Adwaita kennt viele Drittanbieter-Apps nicht (vscode, nwg-look, ...)
+papirus-icon-theme
