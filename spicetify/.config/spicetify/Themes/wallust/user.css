@@ -1,0 +1,4 @@
+/* Colour-only theme: the palette lives entirely in color.ini, which
+   spicetify-wallust-schemes generates from ~/.config/wallust/colorschemes.
+   Spotify's stock layout is left alone on purpose -- theme-apply.sh only
+   switches color_scheme, so nothing here should fight it. */
