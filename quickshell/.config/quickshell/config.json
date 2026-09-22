@@ -50,7 +50,7 @@
     "motionSpring": 420,
     "nightLightTemp": 3000,
     "notchFlare": 16,
-    "notchMode": true,
+    "notchMode": false,
     "notifHistoryHeight": 200,
     "notifShowBody": true,
     "notifTimeout": 2000,

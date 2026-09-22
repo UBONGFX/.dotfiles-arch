@@ -39,18 +39,8 @@ Item {
         anchors { top: parent.top; left: parent.left; right: parent.right; topMargin: Theme.s3; leftMargin: Theme.s4; rightMargin: Theme.s4 }
         height: 18
 
-        Icon {
-            id: headIcon
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            name: "sparkle"
-            size: 14
-            color: AgentUsage.alarming ? Theme.bad : Theme.inkDim
-            Behavior on color { ColorAnimation { duration: Theme.dur(Theme.dFast) } }
-        }
-
         StyledText {
-            anchors.left: headIcon.right; anchors.leftMargin: Theme.s2
+            anchors.left: parent.left
             capCentreIn: parent
             variant: "caption"; text: "AI Usage"; color: Theme.inkDim
         }
