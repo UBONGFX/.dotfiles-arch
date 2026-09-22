@@ -115,7 +115,7 @@ Item {
                     // one text line + meter. The reset countdown rides the label line
                     // rather than sitting under the meter: stacked, each window cost 34px
                     // and the second one fell off the bottom of the card.
-                    height: 22
+                    height: 25
                     readonly property real pct: Math.max(0, Math.min(1, modelData.percent))
                     readonly property bool hot: pct >= 0.9
 
@@ -143,7 +143,7 @@ Item {
                     Rectangle {
                         anchors.left: parent.left; anchors.right: parent.right
                         anchors.top: lbl.bottom; anchors.topMargin: 3
-                        height: 4
+                        height: 6
                         radius: height / 2
                         color: Theme.fillLow
                         Rectangle {
