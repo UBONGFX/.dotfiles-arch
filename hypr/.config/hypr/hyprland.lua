@@ -304,20 +304,25 @@ hl.bind(mainMod .. " + A",           hl.dsp.exec_cmd("qs ipc call controlcenter 
 
 -- Session control. The shell owns the lock screen now (WlSessionLock + PAM),
 -- so hyprlock is unbound but still installed.
+-- Power menu (lock / logout / reboot / shutdown). On the German layout `Entf`
+-- IS the Delete keysym, so CONTROL+ALT+Entf works; SUPER+Backspace is the
+-- easier one-hand alternative.
+hl.bind(mainMod .. " + BackSpace",   hl.dsp.global("quickshell:logout"))
 hl.bind("CONTROL + ALT + Delete",    hl.dsp.global("quickshell:logout"))
 hl.bind("CONTROL + ALT + L",         hl.dsp.global("quickshell:lock"))
 
--- Move focus with mainMod + vim movement keys
-hl.bind(mainMod .. " + h", hl.dsp.focus({ direction = "left" }))
-hl.bind(mainMod .. " + l", hl.dsp.focus({ direction = "right" }))
-hl.bind(mainMod .. " + k", hl.dsp.focus({ direction = "up" }))
-hl.bind(mainMod .. " + j", hl.dsp.focus({ direction = "down" }))
+-- Window management is on the arrow keys, which leaves h/j/k/l free.
+-- Move focus with mainMod + arrows
+hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
+hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
+hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "up" }))
+hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 
--- Move windows with mainMod + SHIFT + vim keys
-hl.bind(mainMod .. " + SHIFT + h", hl.dsp.window.move({ direction = "left" }))
-hl.bind(mainMod .. " + SHIFT + l", hl.dsp.window.move({ direction = "right" }))
-hl.bind(mainMod .. " + SHIFT + j", hl.dsp.window.move({ direction = "down" }))
-hl.bind(mainMod .. " + SHIFT + k", hl.dsp.window.move({ direction = "up" }))
+-- Move windows with mainMod + SHIFT + arrows
+hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.window.move({ direction = "left" }))
+hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.move({ direction = "down" }))
+hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.move({ direction = "up" }))
 
 -- Switch workspaces with mainMod + [0-9]
 -- Move active window to a workspace with mainMod + SHIFT + [0-9]
@@ -342,11 +347,11 @@ hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
--- Resize windows with mainMod + ALT + vim keys
-hl.bind(mainMod .. " + ALT + h", hl.dsp.window.resize({ x = -40, y = 0 }))
-hl.bind(mainMod .. " + ALT + l", hl.dsp.window.resize({ x = 40,  y = 0 }))
-hl.bind(mainMod .. " + ALT + k", hl.dsp.window.resize({ x = 0,   y = -40 }))
-hl.bind(mainMod .. " + ALT + j", hl.dsp.window.resize({ x = 0,   y = 40 }))
+-- Resize windows with mainMod + ALT + arrows
+hl.bind(mainMod .. " + ALT + left",  hl.dsp.window.resize({ x = -40, y = 0 }))
+hl.bind(mainMod .. " + ALT + right", hl.dsp.window.resize({ x = 40,  y = 0 }))
+hl.bind(mainMod .. " + ALT + up",    hl.dsp.window.resize({ x = 0,   y = -40 }))
+hl.bind(mainMod .. " + ALT + down",  hl.dsp.window.resize({ x = 0,   y = 40 }))
 
 -- Laptop multimedia keys for volume and LCD brightness
 -- Volume and brightness run inside the shell (smooth on key repeat, and they
