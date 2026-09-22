@@ -146,8 +146,13 @@ for a in out:
     if a['models']:
         rows.append({'kind': 'head', 'a': 'Tokens by model',
                      'b': (a['todayTokens'] + ' today') if a['todayTokens'] not in ('', '0') else ''})
+        # Share is scaled to the HEAVIEST model, not to the sum, so the top row is
+        # always a full bar -- same scale-to-peak omarchy used, which keeps the
+        # smaller models readable instead of collapsing them to a sliver.
+        peak = max(1, a['models'][0]['total'])
         for m in a['models']:
-            rows.append({'kind': 'model', 'a': m['name'], 'b': m['text']})
+            rows.append({'kind': 'model', 'a': m['name'], 'b': m['text'],
+                         'share': m['total'] / peak})
     if not a['limits']:
         note = a['helpText'] if (not a['ready'] and a['helpText']) else (a['statusText'] or 'No quota reported')
         rows.append({'kind': 'note', 'a': note, 'b': ''})

@@ -96,12 +96,32 @@ Item {
                 width: list.width
                 height: kind === "agent" ? 17
                       : kind === "limit" ? 25
-                      : kind === "note"  ? 15
+                      : kind === "model" ? 22
                       : 15
+
+                // model rows read as a table: the share bar fills the row behind the
+                // label instead of stacking under it.
+                Rectangle {
+                    visible: parent.kind === "model"
+                    anchors.fill: parent
+                    radius: Theme.rSm
+                    color: Theme.alpha(Theme.inkPrimary, 0.05)
+                }
+                Rectangle {
+                    visible: parent.kind === "model"
+                    anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom
+                    width: parent.width * Math.max(0, Math.min(1, modelData.share || 0))
+                    radius: Theme.rSm
+                    color: Theme.alpha(Theme.accent, 0.22)
+                    Behavior on width { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+                }
 
                 StyledText {
                     id: left
-                    anchors.top: parent.top; anchors.left: parent.left
+                    anchors.left: parent.left
+                    anchors.leftMargin: parent.kind === "model" ? Theme.s2 : 0
+                    anchors.top: parent.kind === "model" ? undefined : parent.top
+                    anchors.verticalCenter: parent.kind === "model" ? parent.verticalCenter : undefined
                     anchors.right: right.left; anchors.rightMargin: Theme.s2
                     elide: Text.ElideRight
                     variant: parent.kind === "agent" ? "label" : "caption"
@@ -118,7 +138,10 @@ Item {
 
                 StyledText {
                     id: right
-                    anchors.top: parent.top; anchors.right: parent.right
+                    anchors.right: parent.right
+                    anchors.rightMargin: parent.kind === "model" ? Theme.s2 : 0
+                    anchors.top: parent.kind === "model" ? undefined : parent.top
+                    anchors.verticalCenter: parent.kind === "model" ? parent.verticalCenter : undefined
                     visible: String(modelData.b) !== ""
                     variant: "caption"
                     text: modelData.b
