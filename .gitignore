@@ -9,3 +9,7 @@ hypr/.config/hypr/colors/
 #   wallpaper-state last wallpaper per theme
 quickshell/.config/quickshell/colors.json
 quickshell/.config/quickshell/wallpaper-state
+
+# wallust writes terminal colours here; ghostty's config dir is stowed, so the
+# generated file would otherwise land in the repo. (kitty's colors/ is local.)
+ghostty/.config/ghostty/colors/

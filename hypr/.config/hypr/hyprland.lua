@@ -81,6 +81,24 @@ hl.env("QT_QPA_PLATFORMTHEME", "qt5ct")
 ---- LOOK AND FEEL ----
 -----------------------
 
+-- Theme colours from wallust, rewritten by ~/.config/wallust/theme-apply.sh on
+-- every theme switch; that file sets a global `colors` table. The require is
+-- guarded: on a fresh machine the file does not exist yet, and an unguarded
+-- failure would abort this whole config and drop Hyprland into emergency mode
+-- (SUPER+Q as the only bind). Falls back to the Tokyo Night Storm values used
+-- before wallust.
+local okColors = pcall(require, "colors.custom.wallust")
+local palette  = okColors and colors or nil
+
+-- wallust emits "rgb(RRGGBB)"; borders want alpha, so re-wrap as rgba(RRGGBBAA).
+local function border(name, alpha, fallback)
+    local hex = palette and palette[name] and palette[name]:match("rgb%((%x+)%)")
+    return hex and ("rgba(" .. hex .. alpha .. ")") or fallback
+end
+
+local activeBorder   = border("blue",  "80", "rgba(565f8980)")
+local inactiveBorder = border("grey0", "50", "rgba(565f8950)")
+
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
     general = {
@@ -89,10 +107,10 @@ hl.config({
 
         border_size = 1,
 
-        -- Tokyo Night Storm border colors
+        -- Borders follow the active wallust theme (see `border` above).
         col = {
-            active_border   = "rgba(565f8980)",
-            inactive_border = "rgba(565f8950)",
+            active_border   = activeBorder,
+            inactive_border = inactiveBorder,
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
