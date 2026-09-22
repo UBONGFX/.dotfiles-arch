@@ -287,7 +287,7 @@ hl.bind(mainMod .. " + P",           hl.dsp.window.pseudo())
 
 -- Universal copy/paste/cut: works in normal windows and in terminals, where the
 -- script swaps in Ctrl+Insert / Shift+Insert so Ctrl+C keeps interrupting.
-hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipboard copy"))
+hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipboard copy"))
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipboard paste"))
 hl.bind(mainMod .. " + X", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipboard cut"))
 
@@ -296,7 +296,7 @@ hl.bind(mainMod .. " + X", hl.dsp.exec_cmd(home .. "/.local/bin/universal-clipbo
 -- centre has none, so it is driven over IPC (the island's pill also opens it).
 hl.bind(mainMod .. " + T",           hl.dsp.global("quickshell:theme"))
 hl.bind(mainMod .. " + SHIFT + T",   hl.dsp.global("quickshell:wallpaper"))
-hl.bind(mainMod .. " + C",           hl.dsp.global("quickshell:calendar"))
+hl.bind(mainMod .. " + SHIFT + C",   hl.dsp.global("quickshell:calendar"))
 hl.bind(mainMod .. " + comma",       hl.dsp.global("quickshell:settings"))
 hl.bind(mainMod .. " + N",           hl.dsp.global("quickshell:nightlight"))
 hl.bind(mainMod .. " + G",           hl.dsp.global("quickshell:gamemode"))
@@ -308,7 +308,10 @@ hl.bind(mainMod .. " + A",           hl.dsp.exec_cmd("qs ipc call controlcenter 
 -- IS the Delete keysym, so CONTROL+ALT+Entf works; SUPER+Backspace is the
 -- easier one-hand alternative.
 hl.bind(mainMod .. " + BackSpace",   hl.dsp.global("quickshell:logout"))
+hl.bind(mainMod .. " + L",           hl.dsp.global("quickshell:lock"))
 hl.bind("CONTROL + ALT + Delete",    hl.dsp.global("quickshell:logout"))
+-- NOTE: on the `de` layout only the LEFT Alt is Alt_L; the right one is AltGr
+-- (ISO_Level3_Shift), so Ctrl + right-Alt + L can never match this bind.
 hl.bind("CONTROL + ALT + L",         hl.dsp.global("quickshell:lock"))
 
 -- Window management is on the arrow keys, which leaves h/j/k/l free.
