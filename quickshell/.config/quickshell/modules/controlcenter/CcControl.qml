@@ -57,6 +57,7 @@ Item {
     Component { id: sliderComp; CcSliderTile { ctl: root } }
     Component { id: mediaComp;  CcMediaTile { ctl: root } }
     Component { id: notifComp;  CcNotificationsTile { ctl: root } }
+    Component { id: agentComp;  CcAgentTile { ctl: root } }
 
     Loader {
         anchors.fill: parent
@@ -64,6 +65,7 @@ Item {
                        : root.kind === "slider" ? sliderComp
                        : root.kind === "media" ? mediaComp
                        : root.kind === "notifications" ? notifComp
+                       : root.kind === "agents" ? agentComp
                        : null
     }
 }

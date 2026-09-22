@@ -135,7 +135,8 @@ Singleton {
         { key: "display",       label: "Display",       kind: "slider",        icon: "brightness", sizes: [[3,1],[4,1],[5,1],[6,1],[0,1],[1,2],[2,2],[0,2]],        def: [0,1] },
         { key: "sound",         label: "Sound",         kind: "slider",        icon: "volume",     sizes: [[3,1],[4,1],[5,1],[6,1],[0,1],[1,2],[2,2],[0,2]],        def: [0,1] },
         { key: "media",         label: "Now Playing",   kind: "media",         icon: "music",      sizes: [[1,1],[2,1],[4,1],[0,1],[2,2],[3,2],[4,2],[0,2]],        def: [3,2] },
-        { key: "notifications", label: "Notifications", kind: "notifications", icon: "bell",       sizes: [[0,1],[0,2],[0,3],[0,4]],                                def: [0,2] }
+        { key: "notifications", label: "Notifications", kind: "notifications", icon: "bell",       sizes: [[0,1],[0,2],[0,3],[0,4]],                                def: [0,2] },
+        { key: "agents",        label: "AI Usage",      kind: "agents",        icon: "sparkle",    sizes: [[2,1],[3,1],[4,1],[0,1],[2,2],[3,2],[4,2],[0,2]],        def: [0,2] }
     ]
     function ccReg(key) {
         for (let i = 0; i < ccRegistry.length; i++) if (ccRegistry[i].key === key) return ccRegistry[i];

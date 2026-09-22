@@ -27,6 +27,9 @@ Item {
         "mic":        { d: "M12,4 a3,3 0 0,1 3,3 V11 a3,3 0 0,1 -6,0 V7 a3,3 0 0,1 3,-3 Z M7.5,11 a4.5,4.5 0 0,0 9,0 M12,15.5 V19 M9,19 H15", filled: false },
         "brightness": { d: "M8.5,12 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0 M12,2 V4.5 M12,19.5 V22 M2,12 H4.5 M19.5,12 H22 M5,5 L6.8,6.8 M17.2,17.2 L19,19 M19,5 L17.2,6.8 M6.8,17.2 L5,19", filled: false },
         "night":      { d: "M20,13.5 A8.5,8.5 0 1,1 10.5,4 A6.5,6.5 0 0,0 20,13.5 Z", filled: true },
+        // four-point sparkle: the usual shorthand for an AI/agent surface. Big star
+        // centre-left, small one upper-right, both drawn as concave diamonds.
+        "sparkle":    { d: "M10,3 C10,7 11,8.5 15,9.5 C11,10.5 10,12 10,16 C10,12 9,10.5 5,9.5 C9,8.5 10,7 10,3 Z M17,13 C17,15 17.5,15.8 19.5,16.3 C17.5,16.8 17,17.6 17,19.6 C17,17.6 16.5,16.8 14.5,16.3 C16.5,15.8 17,15 17,13 Z", filled: true },
         "dnd":        { d: "M4,12 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0 M8.5,12 H15.5", filled: false },
         "play":       { d: "M8,5 L19,12 L8,19 Z", filled: true },
         "pause":      { d: "M7,5 H10.5 V19 H7 Z M13.5,5 H17 V19 H13.5 Z", filled: true },

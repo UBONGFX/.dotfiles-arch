@@ -1,0 +1,61 @@
+#!/bin/bash
+# Adapted from omarchy-shell (https://github.com/basecamp/omarchy), MIT licence,
+# Copyright (c) David Heinemeier Hansson. Changed from the original: collectors are
+# discovered next to this script rather than under $OMARCHY_PATH, and records are
+# written to ~/.local/state/agents/usage so nothing depends on the omarchy checkout.
+#
+# Each agent-usage-<agent> collector prints one display-ready JSON record; this
+# writes them where the shell's AgentUsage service watches. Adding an agent is
+# adding a collector.
+#
+# Usage: agent-usage-update [--force] [--limits-only] [--except <agent>] [agent...]
+
+set -uo pipefail
+
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+USAGE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/agents/usage"
+mkdir -p "$USAGE_DIR"
+
+flags=()
+only=()
+declare -A excluded
+
+while (( $# > 0 )); do
+  case "$1" in
+  --force | --limits-only) flags+=("$1") ;;
+  --except) excluded[$2]=1; shift ;;
+  *) only+=("$1") ;;
+  esac
+  shift
+done
+
+wanted() {
+  local agent="$1"
+  [[ -n ${excluded[$agent]:-} ]] && return 1
+  (( ${#only[@]} == 0 )) && return 0
+  local candidate
+  for candidate in "${only[@]}"; do
+    [[ $candidate == "$agent" ]] && return 0
+  done
+  return 1
+}
+
+status=0
+for collector in "$HERE"/agent-usage-*; do
+  [[ -x $collector ]] || continue
+  agent="${collector##*/agent-usage-}"
+  [[ $agent == update ]] && continue
+  wanted "$agent" || continue
+
+  # Write via a temp file so a reader never sees a half-written record.
+  tmp="$(mktemp "$USAGE_DIR/.$agent.XXXXXX")"
+  if "$collector" "${flags[@]+"${flags[@]}"}" >"$tmp" 2>/dev/null && [[ -s $tmp ]]; then
+    mv "$tmp" "$USAGE_DIR/$agent.json"
+  else
+    rm -f "$tmp"
+    echo "agent-usage-update: $agent collector failed" >&2
+    status=1
+  fi
+done
+
+exit "$status"
