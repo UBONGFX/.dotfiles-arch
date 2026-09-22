@@ -73,6 +73,11 @@ polybar_colors="$HOME/Playground/poly-quickshell/apply-colors.sh"
 # --- non-GTK reloads (cs skips wallust [hooks]) ---
 hyprctl reload    >/dev/null 2>&1 || true
 pkill -USR1 kitty 2>/dev/null      || true
+
+# ghostty has no reload signal -- signals terminate it -- but it exports a
+# "reload-config" GTK action on the session bus, which recolours running windows.
+busctl --user call com.mitchellh.ghostty /com/mitchellh/ghostty \
+    org.gtk.Actions Activate "sava{sv}" "reload-config" 0 0 >/dev/null 2>&1 || true
 # foot: new windows pick up colors. vesktop: hot-reloads CSS. quickshell: live FileView.
 
 # --- GTK (option B): switch the matching custom GTK 3/4 theme, if one exists ---
