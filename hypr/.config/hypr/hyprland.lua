@@ -99,8 +99,11 @@ end
 -- Neutral on purpose: taken from the palette's grey ramp, not its accent, so
 -- borders follow the theme's lightness without adding a colour cast.
 -- Alpha is hex: 99 = 60%, 66 = 40%.
-local activeBorder   = border("grey2", "99", "rgba(565f8999)")
-local inactiveBorder = border("bg3",   "66", "rgba(565f8966)")
+-- bg4 is the palette's own "lighter shade for borders" -- a step above the
+-- background rather than a foreground grey, so the edge reads as depth instead
+-- of a highlight. Alpha is hex: 99 = 60%, 66 = 40%.
+local activeBorder   = border("bg4", "99", "rgba(565f8999)")
+local inactiveBorder = border("bg2", "66", "rgba(565f8966)")
 
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
