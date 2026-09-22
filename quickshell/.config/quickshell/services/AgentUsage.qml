@@ -18,6 +18,8 @@ Singleton {
     // [{ id, name, tierLabel, ready, statusText, helpText, updatedAt,
     //    limits: [{ label, percent, resetsAt }] }], alphabetical by name.
     property var agents: []
+    // flat display rows for the card (see the python below)
+    property var rows: []
     // raw payload of the last publish, so an unchanged refresh is a no-op: handing
     // back an equal-but-new array swaps identity and resets every bound view, which
     // would flicker the tile each time the control center opens (Themes.qml, same trap).
@@ -57,7 +59,33 @@ Singleton {
         // learned that lesson the hard way (every swatch rendered black the day it went
         // missing). python3 is effectively always there on Arch.
         command: ["python3", "-c", `
-import glob, json, os
+import glob, json, os, re
+
+def fmt_tokens(n):
+    if n >= 1e9: return '%.1fB' % (n / 1e9)
+    if n >= 1e6: return '%.1fM' % (n / 1e6)
+    if n >= 1e3: return '%.1fK' % (n / 1e3)
+    return str(n)
+
+def _word(w):
+    return {'gpt': 'GPT', 'deepseek': 'DeepSeek'}.get(w, w[:1].upper() + w[1:])
+
+# Model ids arrive hyphenated with the version split across segments
+# ('claude-opus-5', 'gpt-5.6-sol'): rejoin the numeric run and title-case the rest.
+def friendly_model(mid):
+    if not mid: return 'Unknown'
+    name = re.sub(r'-\d{8}$', '', re.sub(r'^claude-', '', str(mid)))
+    words, version = [], []
+    for part in name.split('-'):
+        if not part: continue
+        if part[0].isdigit():
+            version.append(part); continue
+        if version:
+            words.append('.'.join(version)); version = []
+        words.append(_word(part))
+    if version: words.append('.'.join(version))
+    return ' '.join(words) or 'Unknown'
+
 state = os.environ.get('XDG_STATE_HOME') or os.path.expanduser('~/.local/state')
 out = []
 for f in sorted(glob.glob(os.path.join(state, 'agents', 'usage', '*.json'))):
@@ -73,6 +101,20 @@ for f in sorted(glob.glob(os.path.join(state, 'agents', 'usage', '*.json'))):
                            'resetsAt': str(l.get('resetsAt') or '')})
         except Exception:
             pass
+    # Tokens by model, biggest first. Same shape omarchy's panel showed: the four
+    # heaviest models with their all-time totals (input + output + both cache legs).
+    models = []
+    for mid, b in (d.get('modelUsage') or {}).items():
+        if not isinstance(b, dict):
+            continue
+        total = sum(int(b.get(k) or 0) for k in
+                    ('inputTokens', 'outputTokens', 'cacheReadInputTokens', 'cacheCreationInputTokens'))
+        if total <= 0:
+            continue
+        models.append({'name': friendly_model(mid), 'total': total, 'text': fmt_tokens(total)})
+    models.sort(key=lambda m: -m['total'])
+    models = models[:4]
+
     out.append({'id': str(d.get('id') or ''),
                 'name': str(d.get('name') or d.get('id') or ''),
                 'tierLabel': str(d.get('tierLabel') or ''),
@@ -82,15 +124,42 @@ for f in sorted(glob.glob(os.path.join(state, 'agents', 'usage', '*.json'))):
                 'helpText': str(d.get('authHelpText') or ''),
                 'updatedAt': str(d.get('updatedAt') or ''),
                 'todayPrompts': int(d.get('todayPrompts') or 0),
+                'todayTokens': fmt_tokens(int(d.get('todayTotalTokens') or 0)),
+                'models': models,
                 'limits': limits})
-print(json.dumps(out))
+# One flat list of display rows for the whole card. QML renders this with a single
+# Repeater: a Column that declares siblings AFTER a Repeater never laid them out,
+# so the card is built from exactly one repeater and no trailing siblings.
+rows = []
+for a in out:
+    # An agent with neither quota nor per-model tokens has nothing to show but an
+    # "unavailable" line; skip it rather than spend rows on it. Any collector that
+    # starts reporting real data appears here on its own.
+    if not a['limits'] and not a['models']:
+        continue
+    rows.append({'kind': 'agent', 'a': a['name'], 'b': a['tierLabel']})
+    for l in a['limits']:
+        pct = l['percent']
+        label = l['label']
+        rows.append({'kind': 'limit', 'a': label, 'b': '%d%%' % round(pct * 100),
+                     'pct': pct, 'resetsAt': l['resetsAt']})
+    if a['models']:
+        rows.append({'kind': 'head', 'a': 'Tokens by model',
+                     'b': (a['todayTokens'] + ' today') if a['todayTokens'] not in ('', '0') else ''})
+        for m in a['models']:
+            rows.append({'kind': 'model', 'a': m['name'], 'b': m['text']})
+    if not a['limits']:
+        note = a['helpText'] if (not a['ready'] and a['helpText']) else (a['statusText'] or 'No quota reported')
+        rows.append({'kind': 'note', 'a': note, 'b': ''})
+print(json.dumps({'agents': out, 'rows': rows}))
 `]
         stdout: StdioCollector {
             onStreamFinished: {
                 const raw = text.trim();
                 if (raw === "" || raw === root.lastRaw) return;
-                let out = [];
-                try { out = JSON.parse(raw); } catch (e) { return; }
+                let payload = null;
+                try { payload = JSON.parse(raw); } catch (e) { return; }
+                let out = payload.agents || [];
                 // Agents that actually report quota come first -- Codex and Fireworks
                 // ship records with no limit windows, and burying Claude under two
                 // "unavailable" lines would waste the rows that matter.
@@ -101,6 +170,7 @@ print(json.dumps(out))
                 });
                 root.lastRaw = raw;
                 root.agents = out;
+                root.rows = payload.rows || [];
             }
         }
     }

@@ -73,101 +73,78 @@ Item {
         variant: "label"; text: "No agent data"; color: Theme.inkDim
     }
 
-    ListView {
+    // The whole card is ONE Repeater over AgentUsage.rows. Anything declared as a
+    // sibling AFTER a Repeater inside a Column never got laid out here (later agents
+    // and the per-model rows silently vanished), so the card is built from a single
+    // flat row list instead of nested repeaters.
+    Column {
         id: list
-        visible: AgentUsage.agents.length > 0
+        visible: AgentUsage.rows.length > 0
         anchors { top: head.bottom; left: parent.left; right: parent.right; bottom: parent.bottom; topMargin: Theme.s2; leftMargin: Theme.s4; rightMargin: Theme.s4; bottomMargin: Theme.s3 }
+        spacing: 3
         clip: true
-        interactive: false
-        spacing: Theme.s3
-        model: AgentUsage.agents
 
-        delegate: Column {
-            required property var modelData
-            width: list.width
-            spacing: Theme.s2
+        Repeater {
+            model: AgentUsage.rows
 
-            // agent name + plan
-            Item {
-                width: parent.width
-                height: 16
+            delegate: Item {
+                required property var modelData
+                readonly property string kind: modelData.kind
+                readonly property real pct: kind === "limit" ? Math.max(0, Math.min(1, modelData.pct)) : 0
+                readonly property bool hot: kind === "limit" && pct >= 0.9
+
+                width: list.width
+                height: kind === "agent" ? 17
+                      : kind === "limit" ? 25
+                      : kind === "note"  ? 15
+                      : 15
+
                 StyledText {
-                    anchors.left: parent.left; capCentreIn: parent
-                    variant: "label"
-                    text: modelData.name
-                    color: Theme.inkPrimary
+                    id: left
+                    anchors.top: parent.top; anchors.left: parent.left
+                    anchors.right: right.left; anchors.rightMargin: Theme.s2
+                    elide: Text.ElideRight
+                    variant: parent.kind === "agent" ? "label" : "caption"
+                    text: {
+                        if (parent.kind !== "limit") return modelData.a;
+                        const r = tile.resetText(modelData.resetsAt);
+                        return r === "" ? modelData.a : modelData.a + "  ·  " + r;
+                    }
+                    color: parent.kind === "agent" ? Theme.inkPrimary
+                         : parent.kind === "model" ? Theme.inkDim
+                         : parent.kind === "limit" ? Theme.inkDim
+                         : Theme.inkFaint
                 }
+
                 StyledText {
-                    anchors.right: parent.right; capCentreIn: parent
-                    visible: String(modelData.tierLabel) !== ""
+                    id: right
+                    anchors.top: parent.top; anchors.right: parent.right
+                    visible: String(modelData.b) !== ""
                     variant: "caption"
-                    text: modelData.tierLabel
-                    color: Theme.inkFaint
+                    text: modelData.b
+                    color: parent.hot ? Theme.bad
+                         : parent.kind === "model" ? Theme.inkDim
+                         : parent.kind === "limit" ? Theme.inkDim
+                         : Theme.inkFaint
                 }
-            }
 
-            // One row per limit window.
-            Repeater {
-                model: modelData.limits || []
-                delegate: Item {
-                    required property var modelData
-                    width: list.width
-                    // one text line + meter. The reset countdown rides the label line
-                    // rather than sitting under the meter: stacked, each window cost 34px
-                    // and the second one fell off the bottom of the card.
-                    height: 25
-                    readonly property real pct: Math.max(0, Math.min(1, modelData.percent))
-                    readonly property bool hot: pct >= 0.9
-
-                    StyledText {
-                        id: lbl
-                        anchors.top: parent.top; anchors.left: parent.left
-                        anchors.right: pctText.left; anchors.rightMargin: Theme.s2
-                        elide: Text.ElideRight
-                        variant: "caption"
-                        text: {
-                            const r = tile.resetText(modelData.resetsAt);
-                            return r === "" ? modelData.label : modelData.label + "  ·  " + r;
-                        }
-                        color: Theme.inkDim
-                    }
-                    StyledText {
-                        id: pctText
-                        anchors.top: parent.top; anchors.right: parent.right
-                        variant: "caption"
-                        text: Math.round(parent.pct * 100) + "%"
-                        color: parent.hot ? Theme.bad : Theme.inkDim
-                    }
-
-                    // meter: dim track, bright fill
+                // meter, limits only: dim track, bright fill
+                Rectangle {
+                    visible: parent.kind === "limit"
+                    anchors.left: parent.left; anchors.right: parent.right
+                    anchors.top: left.bottom; anchors.topMargin: 3
+                    height: 6
+                    radius: height / 2
+                    color: Theme.fillLow
                     Rectangle {
-                        anchors.left: parent.left; anchors.right: parent.right
-                        anchors.top: lbl.bottom; anchors.topMargin: 3
-                        height: 6
-                        radius: height / 2
-                        color: Theme.fillLow
-                        Rectangle {
-                            width: Math.max(parent.height, parent.width * parent.parent.pct)
-                            height: parent.height
-                            radius: parent.radius
-                            color: parent.parent.hot ? Theme.bad : Theme.accent
-                            Behavior on width { NumberAnimation { duration: Theme.dur(Theme.dFast) } }
-                            Behavior on color { ColorAnimation { duration: Theme.dur(Theme.dFast) } }
-                        }
+                        width: Math.max(parent.height, parent.width * parent.parent.pct)
+                        height: parent.height
+                        radius: parent.radius
+                        color: parent.parent.hot ? Theme.bad : Theme.accent
+                        Behavior on width { NumberAnimation { duration: Theme.dur(Theme.dFast) } }
+                        Behavior on color { ColorAnimation { duration: Theme.dur(Theme.dFast) } }
                     }
                 }
-            }
-
-            // No windows to draw: say why rather than leaving a gap.
-            StyledText {
-                visible: !(modelData.limits && modelData.limits.length > 0)
-                width: parent.width
-                variant: "caption"
-                wrapMode: Text.WordWrap
-                text: !modelData.ready && String(modelData.helpText) !== "" ? modelData.helpText
-                    : String(modelData.statusText) !== "" ? modelData.statusText
-                    : "No quota reported"
-                color: Theme.inkFaint
             }
         }
     }
