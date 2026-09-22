@@ -1,0 +1,157 @@
+#!/usr/bin/env python3
+"""Generate a spicetify color.ini with one scheme per wallust colorscheme.
+
+theme-apply.sh recolours Spotify by name: after switching to <theme> it looks for
+a section literally called [<theme>] (or [<theme>-dark]) in the ACTIVE spicetify
+theme's color.ini, and only then runs `spicetify config color_scheme`. No theme
+ships sections named after wallust palettes, so that step silently did nothing.
+This writes them.
+
+Usage:
+  spicetify-wallust-schemes [/path/to/color.ini]
+
+With no argument it targets the active spicetify theme, asking spicetify where
+that is. An existing file is backed up next to itself before being replaced.
+"""
+
+from __future__ import annotations
+
+import glob
+import json
+import os
+import shutil
+import subprocess
+import sys
+import time
+
+SCHEME_DIR = os.path.expanduser("~/.config/wallust/colorschemes")
+
+
+def rgb(h: str) -> tuple[int, int, int]:
+    h = h.strip().lstrip("#")
+    return int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+
+
+def hexa(c: tuple[float, float, float]) -> str:
+    return "%02X%02X%02X" % tuple(max(0, min(255, int(round(v)))) for v in c)
+
+
+def mix(a, b, t):
+    return tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
+
+
+def luminance(c) -> float:
+    # sRGB relative luminance, good enough to tell a dark palette from a light one
+    def lin(v):
+        v /= 255.0
+        return v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+    r, g, b = (lin(x) for x in c)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def scheme_section(name: str, data: dict) -> str | None:
+    special = data.get("special") or {}
+    colors = data.get("colors") or []
+    if len(colors) < 16 or not special.get("background"):
+        return None
+
+    bg = rgb(special["background"])
+    fg = rgb(special.get("foreground") or colors[15])
+    c = [rgb(x) for x in colors]
+
+    dark = luminance(bg) < 0.5
+    BLACK, WHITE = (0, 0, 0), (255, 255, 255)
+    # "deeper" moves away from the text (chrome behind the content), "raised"
+    # moves toward it (surfaces sitting on top). Flipping both on light palettes
+    # is what keeps e-ink and material-you legible instead of inverted.
+    deeper = BLACK if dark else WHITE
+    raised = WHITE if dark else BLACK
+
+    accent = c[4] if c[4] != bg else c[5]
+
+    # colour 7 is the light end of the ramp, which on an inverted palette like
+    # e-ink lands on the background itself and makes the secondary text vanish.
+    # Fall back to a muted version of the real text whenever contrast collapses.
+    subtext = c[7]
+    if abs(luminance(subtext) - luminance(bg)) < 0.15:
+        subtext = mix(fg, bg, 0.35)
+
+    button = c[8]
+    if abs(luminance(button) - luminance(bg)) < 0.10:
+        button = mix(bg, raised, 0.30)
+
+    vals = {
+        "text":               fg,
+        "subtext":            subtext,
+        "accent":             accent,
+        "main":               bg,
+        "sidebar":            mix(bg, deeper, 0.35),
+        "player":             mix(bg, deeper, 0.50),
+        "card":               mix(bg, raised, 0.10),
+        "shadow":             mix(bg, deeper, 0.60),
+        "selected-row":       mix(bg, raised, 0.18),
+        "button":             button,
+        "button-active":      accent,
+        "button-disabled":    mix(bg, raised, 0.22),
+        "tab-active":         mix(bg, raised, 0.12),
+        "notification":       mix(bg, raised, 0.12),
+        "notification-error": c[1],
+        "equalizer":          accent,
+        "misc":               button,
+    }
+    width = max(len(k) for k in vals)
+    lines = ["[%s]" % name]
+    lines += ["%-*s = %s" % (width, k, hexa(v)) for k, v in vals.items()]
+    return "\n".join(lines)
+
+
+def target_path(argv: list[str]) -> str:
+    if len(argv) > 1:
+        return os.path.expanduser(argv[1])
+    try:
+        theme = subprocess.run(["spicetify", "config", "current_theme"],
+                               capture_output=True, text=True, timeout=20).stdout
+    except (OSError, subprocess.SubprocessError):
+        sys.exit("spicetify not found; pass the color.ini path explicitly")
+    theme = theme.strip().split()[-1] if theme.strip() else ""
+    if not theme:
+        sys.exit("could not read spicetify's current_theme; pass the path explicitly")
+    return os.path.expanduser("~/.config/spicetify/Themes/%s/color.ini" % theme)
+
+
+def main() -> int:
+    files = sorted(glob.glob(os.path.join(SCHEME_DIR, "*.json")))
+    if not files:
+        sys.exit("no wallust colorschemes in %s" % SCHEME_DIR)
+
+    sections = []
+    skipped = []
+    for f in files:
+        name = os.path.basename(f)[:-5]
+        try:
+            data = json.load(open(f))
+        except Exception:
+            skipped.append(name)
+            continue
+        s = scheme_section(name, data)
+        (sections.append(s) if s else skipped.append(name))
+
+    out = target_path(sys.argv)
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    if os.path.exists(out):
+        backup = "%s.bak.%d" % (out, int(time.time()))
+        shutil.copy2(out, backup)
+        print("backed up existing color.ini -> %s" % backup)
+
+    header = ("; Generated by spicetify-wallust-schemes from\n"
+              "; ~/.config/wallust/colorschemes/*.json -- do not edit by hand.\n"
+              "; One section per wallust palette so theme-apply.sh can match by name.\n\n")
+    open(out, "w").write(header + "\n\n".join(sections) + "\n")
+    print("wrote %d schemes to %s" % (len(sections), out))
+    if skipped:
+        print("skipped (unusable): %s" % ", ".join(skipped))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
