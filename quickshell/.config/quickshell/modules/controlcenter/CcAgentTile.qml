@@ -81,7 +81,7 @@ Item {
         id: list
         visible: AgentUsage.rows.length > 0
         anchors { top: head.bottom; left: parent.left; right: parent.right; bottom: parent.bottom; topMargin: Theme.s2; leftMargin: Theme.s4; rightMargin: Theme.s4; bottomMargin: Theme.s3 }
-        spacing: 3
+        spacing: 5
         clip: true
 
         Repeater {
@@ -94,10 +94,10 @@ Item {
                 readonly property bool hot: kind === "limit" && pct >= 0.9
 
                 width: list.width
-                height: kind === "agent" ? 17
-                      : kind === "limit" ? 25
-                      : kind === "model" ? 22
-                      : 15
+                height: kind === "agent" ? 18
+                      : kind === "limit" ? 26
+                      : kind === "model" ? 23
+                      : 16
 
                 // model rows read as a table: the share bar fills the row behind the
                 // label instead of stacking under it.
@@ -119,7 +119,7 @@ Item {
                 StyledText {
                     id: left
                     anchors.left: parent.left
-                    anchors.leftMargin: parent.kind === "model" ? Theme.s2 : 0
+                    anchors.leftMargin: parent.kind === "model" ? Theme.s3 : 0
                     anchors.top: parent.kind === "model" ? undefined : parent.top
                     anchors.verticalCenter: parent.kind === "model" ? parent.verticalCenter : undefined
                     anchors.right: right.left; anchors.rightMargin: Theme.s2
@@ -139,7 +139,7 @@ Item {
                 StyledText {
                     id: right
                     anchors.right: parent.right
-                    anchors.rightMargin: parent.kind === "model" ? Theme.s2 : 0
+                    anchors.rightMargin: parent.kind === "model" ? Theme.s3 : 0
                     anchors.top: parent.kind === "model" ? undefined : parent.top
                     anchors.verticalCenter: parent.kind === "model" ? parent.verticalCenter : undefined
                     visible: String(modelData.b) !== ""
