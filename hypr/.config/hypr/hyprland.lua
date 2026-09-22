@@ -96,8 +96,11 @@ local function border(name, alpha, fallback)
     return hex and ("rgba(" .. hex .. alpha .. ")") or fallback
 end
 
-local activeBorder   = border("blue",  "80", "rgba(565f8980)")
-local inactiveBorder = border("grey0", "50", "rgba(565f8950)")
+-- Neutral on purpose: taken from the palette's grey ramp, not its accent, so
+-- borders follow the theme's lightness without adding a colour cast.
+-- Alpha is hex: 99 = 60%, 66 = 40%.
+local activeBorder   = border("grey2", "99", "rgba(565f8999)")
+local inactiveBorder = border("bg3",   "66", "rgba(565f8966)")
 
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
